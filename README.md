@@ -11,8 +11,9 @@ This new module found in the Development category allows users to view and manag
 | Xperience Version | Library Version |
 |-------------------|-----------------|
 | >= 29.0.0         | >= 1.0.0        |
+| >= 30.0.0         | >= 1.1.0        |
 
-> **Note:** The latest version that has been tested is 29.0.0
+> **Note:** The latest version that has been tested is 31.0.0
 
 ## ⚙️ Package Installation
 
