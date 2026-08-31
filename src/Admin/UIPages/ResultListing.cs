@@ -51,7 +51,7 @@ public class ResultListing(
         await base.ConfigurePage();
     }
 
-    [PageCommand]
+    [PageCommand(Permission = SystemPermissions.UPDATE)]
     public Task<ICommandResponse> ClearCache() => Clear();
 
 
