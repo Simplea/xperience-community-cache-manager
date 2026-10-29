@@ -12,8 +12,9 @@ This new module found in the Development category allows users to view and manag
 |-------------------|-----------------|
 | >= 29.0.0         | >= 1.0.0        |
 | >= 30.0.0         | >= 1.1.0        |
+| >= 31.7.2         | >= 1.2.0        |
 
-> **Note:** The latest version that has been tested is 31.0.0
+> **Note:** The latest version that has been tested is 31.7.2 (targeting .NET 10)
 
 ## ⚙️ Package Installation
 
@@ -38,8 +39,10 @@ Open the new Cache Manager application in the Development category. The module w
 ### Features
 
 - **View Cache Items**: Browse all cache entries with their keys and values
+- **Search by Key**: Type in the search box to filter cache items whose key contains the text (case-insensitive)
 - **Detailed View**: Click on individual cache items to view their full details in a dialog
 - **Cache Statistics**: View the total count of cache items
+- **Clear Cache Key**: Remove a single cache item using the broom icon on its row
 - **Clear Cache**: Clear all cache items with a single action
 
 The results are displayed in a table showing cache keys and values. Click on an individual row to view the full detail of that cache item's content.

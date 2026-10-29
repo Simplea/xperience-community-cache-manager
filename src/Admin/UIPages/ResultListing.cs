@@ -20,7 +20,7 @@ public class ResultListing(
     IUIPermissionEvaluator permissionEvaluator) : DataContainerListingPage
 {
     protected override object GetIdentifier(IDataContainer dataContainer) =>
-        ValidationHelper.GetInteger(dataContainer[CacheManagerProvider.ROW_IDENTIFIER_COLUMN], -1);
+        ValidationHelper.GetGuid(dataContainer[CacheManagerProvider.ROW_IDENTIFIER_COLUMN], Guid.Empty);
 
 
     protected override Task<IEnumerable<IDataContainer>> LoadDataContainers(CancellationToken cancellationToken) =>
@@ -46,6 +46,15 @@ public class ResultListing(
             PageConfiguration.Caption = $"Cache Items Found ({recordCount})";
             PageConfiguration.HeaderActions.AddCommand("Clear Cache", nameof(ClearCache));
             PageConfiguration.AddEditRowAction<ViewDetails>();
+            PageConfiguration.TableActions.AddCommandWithConfirmation(
+                label: "Clear cache key",
+                command: nameof(ClearCacheKey),
+                icon: Icons.Broom,
+                confirmation: "Clear cache key",
+                confirmationDetail: "Are you sure you want to remove this item from the cache?",
+                confirmationButton: "Clear",
+                title: "Clear cache key",
+                destructive: true);
         }
 
         await base.ConfigurePage();
@@ -53,6 +62,26 @@ public class ResultListing(
 
     [PageCommand]
     public Task<ICommandResponse> ClearCache() => Clear();
+
+    [PageCommand]
+    public Task<ICommandResponse<RowActionResult>> ClearCacheKey(Guid id)
+    {
+        bool hasRemovedKey = false;
+        try
+        {
+            hasRemovedKey = cacheManagerProvider.Remove(id);
+        }
+        catch (Exception ex)
+        {
+            eventLogService.LogException(nameof(ResultListing), nameof(ClearCacheKey), ex);
+            return Task.FromResult(ResponseFrom(new RowActionResult(reload: false)).AddErrorMessage("Failed to clear the cache key."));
+        }
+
+        var response = ResponseFrom(new RowActionResult(reload: true, refetchAll: true));
+        return Task.FromResult(hasRemovedKey
+            ? response.AddSuccessMessage("The cache key was successfully cleared.")
+            : response.AddInfoMessage("The cache key no longer exists. It may have already expired or been removed."));
+    }
 
 
     private void ConfigureColumns()
@@ -63,7 +92,8 @@ public class ResultListing(
         int columnMinWidth = Math.Ceiling(columnNames.Max(col => col.Length) * 0.7).ToInteger();
         foreach (string col in columnNames)
         {
-            PageConfiguration.ColumnConfigurations.AddColumn(col, col, minWidth: columnMinWidth);
+            // Only the Key column is searchable; the listing's search box filters by Key using a case-insensitive contains
+            PageConfiguration.ColumnConfigurations.AddColumn(col, col, minWidth: columnMinWidth, searchable: col == "Key");
         }
     }
 

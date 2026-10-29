@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Security.Cryptography;
 using System.Text;
 
 using CMS.Base;
@@ -53,11 +54,11 @@ public class CacheManagerProvider(IEventLogService eventLogService, ICacheAccess
         }
 
         string[] columnNames = new[] { "Key", "Value" };
-        var containers = result!.Tables[0].Rows.OfType<DataRow>().Select((row, i) =>
+        var containers = result!.Tables[0].Rows.OfType<DataRow>().Select(row =>
         {
             var data = new DataContainer
             {
-                [ROW_IDENTIFIER_COLUMN] = i,
+                [ROW_IDENTIFIER_COLUMN] = GetRowIdentifier((string)row["Key"]),
             };
             foreach (string col in columnNames)
             {
@@ -70,11 +71,11 @@ public class CacheManagerProvider(IEventLogService eventLogService, ICacheAccess
         return Task.FromResult<IEnumerable<IDataContainer>>(containers);
     }
 
-    public Task<string> GetRowAsText(int rowIdentifier)
+    public Task<string> GetRowAsText(Guid rowIdentifier)
     {
         EnsureResult();
 
-        var row = result!.Tables[0].Rows[rowIdentifier] ?? throw new InvalidOperationException($"Failed to load row {rowIdentifier}");
+        var row = FindRow(rowIdentifier) ?? throw new InvalidOperationException($"Failed to load row {rowIdentifier}");
         var textResult = new StringBuilder();
         string[] columnNames = new[] { "Key", "Value" };
         foreach (string col in columnNames)
@@ -87,6 +88,40 @@ public class CacheManagerProvider(IEventLogService eventLogService, ICacheAccess
         }
 
         return Task.FromResult(textResult.ToString());
+    }
+
+    public bool Remove(Guid rowIdentifier)
+    {
+        EnsureResult();
+
+        var row = FindRow(rowIdentifier);
+        if (row is null)
+        {
+            return false;
+        }
+
+        // Keys come straight from the cache, so match them exactly and propagate the removal to other web farm servers
+        CacheHelper.Remove((string)row["Key"], caseSensitive: true, logTask: true);
+        return true;
+    }
+
+    /// <summary>
+    /// Gets a stable identifier for a cache key, so a row keeps its identifier even when other cache items are added or removed.
+    /// </summary>
+    private static Guid GetRowIdentifier(string key) =>
+        new(SHA256.HashData(Encoding.UTF8.GetBytes(key)).AsSpan(0, 16));
+
+    /// <summary>
+    /// Finds the row in <see cref="result"/> whose cache key matches the given identifier.
+    /// </summary>
+    private DataRow? FindRow(Guid rowIdentifier)
+    {
+        if (ResultsAreEmpty())
+        {
+            return null;
+        }
+
+        return result!.Tables[0].Rows.OfType<DataRow>().FirstOrDefault(row => GetRowIdentifier((string)row["Key"]) == rowIdentifier);
     }
 
     /// <summary>
