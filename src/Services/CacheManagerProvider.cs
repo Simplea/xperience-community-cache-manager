@@ -105,6 +105,28 @@ public class CacheManagerProvider(IEventLogService eventLogService, ICacheAccess
         return true;
     }
 
+    public int RemoveByKeyContains(string cacheKeyContains)
+    {
+        // Collect the keys first so the cache isn't modified while it's being enumerated
+        List<string> keys = [];
+        var cacheEntries = cacheAccessor.GetEnumerator();
+        while (cacheEntries.MoveNext())
+        {
+            string? key = cacheEntries.Entry.Key?.ToString();
+            if (key is not null && key.Contains(cacheKeyContains, StringComparison.OrdinalIgnoreCase))
+            {
+                keys.Add(key);
+            }
+        }
+
+        foreach (string key in keys)
+        {
+            CacheHelper.Remove(key, caseSensitive: true, logTask: true);
+        }
+
+        return keys.Count;
+    }
+
     /// <summary>
     /// Gets a stable identifier for a cache key, so a row keeps its identifier even when other cache items are added or removed.
     /// </summary>

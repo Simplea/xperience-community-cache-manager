@@ -12,7 +12,7 @@ This new module found in the Development category allows users to view and manag
 |-------------------|-----------------|
 | >= 29.0.0         | >= 1.0.0        |
 | >= 30.0.0         | >= 1.1.0        |
-| >= 31.7.2         | >= 1.2.0        |
+| >= 31.7.2         | >= 1.2.1        |
 
 > **Note:** The latest version that has been tested is 31.7.2 (targeting .NET 10)
 
@@ -32,6 +32,26 @@ Add the following to your application's startup code:
 builder.Services.AddCacheManager();
 ```
 
+### Custom Clear Cache Buttons
+
+Optionally, register up to 10 custom buttons that are displayed next to **Clear Cache**. Each button clears only the cache items whose key contains the given value (case-insensitive), without clearing the entire cache:
+
+```csharp
+builder.Services.AddCacheManager(options =>
+{
+    options.ClearCacheButtons.Add(new ClearCacheButton
+    {
+        ButtonText = "Clear Content Items",
+        CacheKeyContains = "contentitem|"
+    });
+    options.ClearCacheButtons.Add(new ClearCacheButton
+    {
+        ButtonText = "Clear Web Pages",
+        CacheKeyContains = "webpageitem|"
+    });
+});
+```
+
 Open the new Cache Manager application in the Development category. The module will display all current cache items in a table format.
 
 ![Cache Manager](images/list.png)
@@ -44,6 +64,7 @@ Open the new Cache Manager application in the Development category. The module w
 - **Cache Statistics**: View the total count of cache items
 - **Clear Cache Key**: Remove a single cache item using the broom icon on its row
 - **Clear Cache**: Clear all cache items with a single action
+- **Custom Clear Cache Buttons**: Clear only the cache items whose key contains a configured value
 
 The results are displayed in a table showing cache keys and values. Click on an individual row to view the full detail of that cache item's content.
 
