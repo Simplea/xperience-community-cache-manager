@@ -25,8 +25,8 @@ public class ViewDetails(IFormDataBinder formDataBinder, ICacheManagerProvider c
     /// <summary>
     /// Identifier of the result record to view.
     /// </summary>
-    [PageParameter(typeof(IntPageModelBinder))]
-    public int RecordId { get; set; }
+    [PageParameter(typeof(GuidPageModelBinder))]
+    public Guid RecordId { get; set; }
 
 
     public override async Task ConfigurePage()

@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <Authors>Victor Hugo Garcia Hernandez</Authors>
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>1.2.1</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/vhugogarcia/xperience-community-cache-manager</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/vhugogarcia/xperience-community-cache-manager</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/Simplea/xperience-community-cache-manager</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/Simplea/xperience-community-cache-manager</PackageReleaseNotes>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>kentico;xperience;sql;database</PackageTags>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>

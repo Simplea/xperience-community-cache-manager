@@ -36,5 +36,19 @@ public interface ICacheManagerProvider
     /// Gets a record from the current result set, transformed into a human-readable format.
     /// </summary>
     /// <param name="rowIdentifier">The identifier of the record to retrieve.</param>
-    public Task<string> GetRowAsText(int rowIdentifier);
+    public Task<string> GetRowAsText(Guid rowIdentifier);
+
+    /// <summary>
+    /// Removes a single cache item from the cache.
+    /// </summary>
+    /// <param name="rowIdentifier">The identifier of the record whose cache key should be removed.</param>
+    /// <returns>True if the cache item was found and removed, false if it no longer exists.</returns>
+    public bool Remove(Guid rowIdentifier);
+
+    /// <summary>
+    /// Removes all cache items whose key contains the given value (case-insensitive).
+    /// </summary>
+    /// <param name="cacheKeyContains">The value to search for in the cache keys.</param>
+    /// <returns>The number of cache items removed.</returns>
+    public int RemoveByKeyContains(string cacheKeyContains);
 }
